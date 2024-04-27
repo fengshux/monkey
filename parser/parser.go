@@ -166,8 +166,11 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 		return nil
 	}
 
-	// TODO 跳过表达式相关的处理，直到遇见分号
-	for !p.curTokenIs(token.SEMICOLON) {
+	p.nextToken()
+
+	stmt.Value = p.parseExpression(LOWEST)
+
+	if p.peekTokenIs(token.SEMICOLON) {
 		p.nextToken()
 	}
 
@@ -178,8 +181,9 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatment {
 	stmt := &ast.ReturnStatment{Token: p.curToken}
 
 	p.nextToken()
-	// TODO 跳过表达式，直到遇见分号
-	for !p.curTokenIs(token.SEMICOLON) {
+	stmt.ReturnValue = p.parseExpression(LOWEST)
+
+	if p.peekTokenIs(token.SEMICOLON) {
 		p.nextToken()
 	}
 	return stmt
