@@ -36,7 +36,7 @@ func (b *Boolean) Type() ObjectType {
 }
 
 func (b *Boolean) Inspect() string {
-	return fmt.Sprint("%t", b.Value)
+	return fmt.Sprintf("%t", b.Value)
 }
 
 type Null struct{}
