@@ -17,6 +17,8 @@ const (
 	RETURN_VALUE_OBJ = "RETURN_VALUE"
 	ERROR_OBJ        = "ERROR"
 	FUNCTION_OBJ     = "FUNCTION"
+	STRING_OBJ       = "STRING"
+	BUILDIN_OBJ      = "BUILDIN"
 )
 
 type Object interface {
@@ -28,7 +30,7 @@ type Integer struct {
 	Value int64
 }
 
-func (i *Integer) Type() ObjectType {
+func (*Integer) Type() ObjectType {
 	return INTEGER_OBJ
 }
 
@@ -40,7 +42,7 @@ type Boolean struct {
 	Value bool
 }
 
-func (b *Boolean) Type() ObjectType {
+func (*Boolean) Type() ObjectType {
 	return BOOLEAN_OBJ
 }
 
@@ -50,7 +52,7 @@ func (b *Boolean) Inspect() string {
 
 type Null struct{}
 
-func (n *Null) Type() ObjectType {
+func (*Null) Type() ObjectType {
 	return NULL_OBJ
 }
 
@@ -62,7 +64,7 @@ type ReturnValue struct {
 	Value Object
 }
 
-func (r *ReturnValue) Type() ObjectType {
+func (*ReturnValue) Type() ObjectType {
 	return RETURN_VALUE_OBJ
 }
 
@@ -74,7 +76,7 @@ type Error struct {
 	Message string
 }
 
-func (e *Error) Type() ObjectType {
+func (*Error) Type() ObjectType {
 	return ERROR_OBJ
 }
 
@@ -88,7 +90,7 @@ type Function struct {
 	Env        *Environment
 }
 
-func (f *Function) Type() ObjectType {
+func (*Function) Type() ObjectType {
 	return FUNCTION_OBJ
 }
 
@@ -106,4 +108,30 @@ func (f *Function) Inspect() string {
 	out.WriteString(f.Body.String())
 	out.WriteString("\n}")
 	return out.String()
+}
+
+type String struct {
+	Value string
+}
+
+func (*String) Type() ObjectType {
+	return STRING_OBJ
+}
+
+func (s *String) Inspect() string {
+	return s.Value
+}
+
+type BuildinFunction func(args ...Object) Object
+
+type Buildin struct {
+	Fn BuildinFunction
+}
+
+func (*Buildin) Type() ObjectType {
+	return BUILDIN_OBJ
+}
+
+func (b *Buildin) Inspect() string {
+	return "buildin function"
 }

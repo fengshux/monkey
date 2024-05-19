@@ -40,6 +40,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return &object.Integer{Value: node.Value}
 	case *ast.Boolean:
 		return nativeBoolToBooleanObject(node.Value)
+	case *ast.StringLiteral:
+		return &object.String{Value: node.Value}
 	case *ast.Identifer:
 		return evalIdentifier(node, env)
 	case *ast.FunctionLiteral:
@@ -195,6 +197,8 @@ func evalInfixExpression(operator string, left, right object.Object) object.Obje
 	switch {
 	case left.Type() == object.INTEGER_OBJ && right.Type() == object.INTEGER_OBJ:
 		return evalIntegerInfixExpression(operator, left, right)
+	case left.Type() == object.STRING_OBJ && right.Type() == object.STRING_OBJ:
+		return evalStringInfixExpressoin(operator, left, right)
 	case operator == "==":
 		return nativeBoolToBooleanObject(left == right)
 	case operator == "!=":
@@ -232,12 +236,26 @@ func evalIntegerInfixExpression(operator string, left, right object.Object) obje
 	}
 }
 
-func evalIdentifier(node *ast.Identifer, env *object.Environment) object.Object {
-	val, ok := env.Get(node.Value)
-	if !ok {
-		return newError("identifier not found: " + node.Value)
+func evalStringInfixExpressoin(operator string, left, right object.Object) object.Object {
+	if operator != "+" {
+		return newError("unknown operator: %s %s %s", left.Type(), operator, right.Type())
 	}
-	return val
+
+	leftVal := left.(*object.String).Value
+	rightVal := right.(*object.String).Value
+	return &object.String{Value: leftVal + rightVal}
+
+}
+
+func evalIdentifier(node *ast.Identifer, env *object.Environment) object.Object {
+
+	if val, ok := env.Get(node.Value); ok {
+		return val
+	}
+	if buildin, ok := buildins[node.Value]; ok {
+		return buildin
+	}
+	return newError("identifier not found: " + node.Value)
 }
 
 func evalExpressions(exps []ast.Expression, env *object.Environment) []object.Object {
@@ -263,13 +281,17 @@ func extendFunctionEnv(fn *object.Function, args []object.Object) *object.Enviro
 
 func applyFunction(fn object.Object, args []object.Object) object.Object {
 
-	funciton, ok := fn.(*object.Function)
-	if !ok {
+	switch fn := fn.(type) {
+	case *object.Function:
+		extendEnv := extendFunctionEnv(fn, args)
+		evaluated := Eval(fn.Body, extendEnv)
+		return unwrapReturnValue(evaluated)
+	case *object.Buildin:
+		return fn.Fn(args...)
+	default:
 		return newError("not a funciton: %s", fn.Type())
 	}
-	extendEnv := extendFunctionEnv(funciton, args)
-	evaluated := Eval(funciton.Body, extendEnv)
-	return unwrapReturnValue(evaluated)
+
 }
 
 func unwrapReturnValue(obj object.Object) object.Object {

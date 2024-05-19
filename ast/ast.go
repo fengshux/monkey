@@ -57,3 +57,18 @@ func (i *Identifer) TokenLiteral() string {
 func (i *Identifer) String() string {
 	return i.Value
 }
+
+type StringLiteral struct {
+	Token token.Token
+	Value string
+}
+
+func (s *StringLiteral) expressionNode() {}
+
+func (s *StringLiteral) TokenLiteral() string {
+	return s.Token.Literal
+}
+
+func (s *StringLiteral) String() string {
+	return s.Token.Literal
+}

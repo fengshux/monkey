@@ -51,6 +51,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.LPAREN, p.parseGroupExpression)
 	p.registerPrefix(token.IF, p.parseIfExpression)
 	p.registerPrefix(token.FUNCTION, p.parseFunctionLiteral)
+	p.registerPrefix(token.STRING, p.parseStringLiteral)
 
 	// 以下这些符号都用parseInfixExpression
 	for _, v := range []token.TokenType{token.PLUS, token.MINUS,
@@ -392,4 +393,8 @@ func (p *Parser) parseCallArguments() []ast.Expression {
 		return nil
 	}
 	return args
+}
+
+func (p *Parser) parseStringLiteral() ast.Expression {
+	return &ast.StringLiteral{Token: p.curToken, Value: p.curToken.Literal}
 }
