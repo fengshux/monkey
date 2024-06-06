@@ -1,6 +1,8 @@
 package evaluator
 
 import (
+	"fmt"
+
 	"github.com/fengshux/monkey/object"
 )
 
@@ -19,6 +21,9 @@ var buildins = map[string]*object.Buildin{
 	},
 	"push": {
 		Fn: buildinPush,
+	},
+	"puts": {
+		Fn: buildinPuts,
 	},
 }
 
@@ -106,4 +111,12 @@ func buildinPush(args ...object.Object) object.Object {
 	newElement[length] = args[1]
 
 	return &object.Array{Elements: newElement}
+}
+
+func buildinPuts(args ...object.Object) object.Object {
+
+	for _, arg := range args {
+		fmt.Println(arg.Inspect())
+	}
+	return NULL
 }
