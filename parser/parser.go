@@ -55,6 +55,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.STRING, p.parseStringLiteral)
 	p.registerPrefix(token.LBRACKET, p.parseArrayLiteral)
 	p.registerPrefix(token.LBRACE, p.parserHashLiteral)
+	p.registerPrefix(token.MACRO, p.parseMacroLiteral)
 
 	// 以下这些符号都用parseInfixExpression
 	for _, v := range []token.TokenType{token.PLUS, token.MINUS,
@@ -445,4 +446,20 @@ func (p *Parser) parserHashLiteral() ast.Expression {
 		return nil
 	}
 	return hash
+}
+
+func (p *Parser) parseMacroLiteral() ast.Expression {
+	mac := &ast.MacroLiteral{Token: p.curToken}
+
+	if !p.expectPeek(token.LPAREN) {
+		return nil
+	}
+
+	mac.Parameters = p.parseFunctionParameters()
+
+	if !p.expectPeek(token.LBRACE) {
+		return nil
+	}
+	mac.Body = p.parseBlockStatement()
+	return mac
 }

@@ -22,6 +22,8 @@ const (
 	BUILDIN_OBJ      = "BUILDIN"
 	ARRAY_OBJ        = "ARRAY"
 	HASH_OBJ         = "HASH"
+	QUOTE_OBJ        = "QUOTE"
+	MACRO_OBJ        = "MACRO"
 )
 
 type HashKey struct {
@@ -215,6 +217,47 @@ func (h *Hash) Inspect() string {
 	out.WriteByte('{')
 	out.WriteString(strings.Join(pairs, ", "))
 	out.WriteByte('}')
+
+	return out.String()
+}
+
+type Quote struct {
+	Node ast.Node
+}
+
+func (q *Quote) Type() ObjectType {
+	return QUOTE_OBJ
+}
+
+func (q *Quote) Inspect() string {
+	return "QUOTE(" + q.Node.String() + ")"
+}
+
+type Marco struct {
+	Parameters []*ast.Identifer
+	Body       *ast.BlockStatement
+	Env        *Environment
+}
+
+func (m *Marco) Type() ObjectType {
+	return MACRO_OBJ
+}
+
+func (m *Marco) Inspect() string {
+	var out bytes.Buffer
+
+	params := make([]string, len(m.Parameters))
+	for i, p := range m.Parameters {
+		params[i] = p.String()
+	}
+
+	out.WriteString("macro")
+	out.WriteString("(")
+	out.WriteString(strings.Join(params, ", "))
+	out.WriteString(")")
+	out.WriteString("{\n")
+	out.WriteString(m.Body.String())
+	out.WriteString("\n}")
 
 	return out.String()
 }
