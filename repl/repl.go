@@ -48,7 +48,6 @@ func Start(in io.Reader, out io.Writer) {
 
 		evaluator.DefineMacros(program, macroEnv)
 		expanded := evaluator.ExpandMacros(program, macroEnv)
-		fmt.Println("======", expanded)
 		evaluated := evaluator.Eval(expanded, env)
 		if evaluated != nil {
 			io.WriteString(out, evaluated.Inspect())

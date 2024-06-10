@@ -1,5 +1,10 @@
 package object
 
+import (
+	"fmt"
+	"strings"
+)
+
 type Environment struct {
 	store map[string]Object
 	outer *Environment
@@ -28,4 +33,22 @@ func (e *Environment) Get(name string) (Object, bool) {
 func (e *Environment) Set(name string, obj Object) Object {
 	e.store[name] = obj
 	return obj
+}
+
+func (e *Environment) String() string {
+	var out strings.Builder
+	out.WriteString("{")
+
+	kvs := make([]string, 0, len(e.store)+1)
+	for k, v := range e.store {
+		kvs = append(kvs, fmt.Sprintf("%s: %s", k, v.Inspect()))
+	}
+
+	if e.outer != nil {
+		kvs = append(kvs, fmt.Sprintf("%s: %s", "outer", e.outer.String()))
+	}
+
+	out.WriteString(strings.Join(kvs, ", "))
+
+	return out.String()
 }
