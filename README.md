@@ -1,6 +1,6 @@
 # Monkey
 
-*本工程是根据《用Go语言资质解释器》（Thorsten Ball） 里构建Monkey语言进行构建的。本工程里的代码和技术均引用自该书* [Monkey源代码](https://github.com/fengshux/monkey)
+*本工程是根据《用Go语言自制解释器》（Thorsten Ball） 里构建Monkey语言进行构建的。本工程里的代码和技术均引用自该书* [Monkey源代码](https://github.com/fengshux/monkey)
 
 Monkey 语言是为了学习编译原理，自制的一门语言。Monkey是一门解释性语言，本项目实现了Monkey语言的解释器。
 Monkey语言具有以下特性：
