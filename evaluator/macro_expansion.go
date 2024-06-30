@@ -1,8 +1,6 @@
 package evaluator
 
 import (
-	"fmt"
-
 	"github.com/fengshux/monkey/ast"
 	"github.com/fengshux/monkey/object"
 )
